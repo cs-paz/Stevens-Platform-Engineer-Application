@@ -1,17 +1,19 @@
 // definition
-const loadCharacters = () => {
+const loadCharacters = async () => {
   const charactersDiv = document.getElementById("characters");
 
   httpGetAsync("https://swapi.dev/api/people", (responseText) => {
     const characters = JSON.parse(responseText).results;
-    console.log(characters);
-    characters.forEach((character) => {
+    characters.forEach((character, i) => {
+      const id = i + 1;
       // Create main div
       const characterDiv = document.createElement("div");
+      characterDiv.classList.add("box");
       // Create Heading
       const characterHeading = document.createElement("h2");
       const characterName = document.createTextNode(character.name);
       characterHeading.appendChild(characterName);
+
       // Add character info
       const characterInfo = document.createElement("ul");
       // Add Character Height
@@ -49,11 +51,23 @@ const loadCharacters = () => {
       characterInfo.appendChild(characterHairLi);
       characterInfo.appendChild(characterEyeLi);
 
-      characterDiv.appendChild(characterHeading);
-      characterDiv.appendChild(characterInfo);
+      // make entire div a link
+      const vehicleLink = createLink(id);
+      vehicleLink.appendChild(characterHeading); // includes heading
+      vehicleLink.appendChild(characterInfo);
+      characterDiv.appendChild(vehicleLink);
+      // vehicleLink.appendChild(characterDiv);
+      // charactersDiv.appendChild(vehicleLink);
       charactersDiv.appendChild(characterDiv);
     });
   });
+};
+
+const createLink = (id) => {
+  const href = `./vehicles.html?id=${id}`;
+  const link = document.createElement("a");
+  link.href = href;
+  return link;
 };
 
 const httpGetAsync = (url, callback) => {
@@ -66,5 +80,12 @@ const httpGetAsync = (url, callback) => {
   xmlHttp.send(null);
 };
 
-// use
-loadCharacters("http://your-cdn/jquery.js");
+const main = async () => {
+  try {
+    await loadCharacters();
+  } catch (e) {
+    console.log("Loading Characters Failed");
+  }
+};
+
+main();
